@@ -1,0 +1,27 @@
+name: Master
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Cache packages
+        uses: actions/cache@v2
+        with:
+          path: /root/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('setup.py') }}
+      - run: sudo pip install -e '.[dev]'
+      - run: PYTHONPATH=. pytest tests
+      - run: git config --global user.name "github-actions"
+      - run: git config --global user.email "action@github.com"
+      - run: pip install twine
+      # - name: Setup tmate session
+      #   uses: mxschmitt/action-tmate@v3
+      # - run: TWINE_USERNAME=__token__ TWINE_PASSWORD=${{ secrets.PYS3_PYPI_TOKEN }} SKIP=commitizen semantic-release publish

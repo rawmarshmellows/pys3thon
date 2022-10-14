@@ -1,0 +1,19 @@
+name: Test
+on:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Cache packages
+        uses: actions/cache@v2
+        with:
+          path: /root/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('setup.py') }}
+      - run: sudo pip install -e '.[dev]'
+      - run: PYTHONPATH=. pytest tests

@@ -1,0 +1,40 @@
+repos:
+  # Check that the commit message adheres to the Angular convention
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v2.35.0
+    hooks:
+      - id: commitizen
+        stages: [commit-msg]
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.3.0
+    hooks:
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+  # Python formatting and linting
+  - repo: https://github.com/psf/black
+    rev: 22.10.0
+    hooks:
+      - id: black
+  - repo: https://github.com/PyCQA/autoflake
+    rev: v1.7.5
+    hooks:
+      - id: autoflake
+  - repo: https://github.com/pycqa/flake8
+    rev: 5.0.4
+    hooks:
+      - id: flake8
+  - repo: https://github.com/pycqa/isort
+    rev: 5.10.1
+    hooks:
+      - id: isort
+        args: ["--profile", "black", "--filter-files", "--line-length", "148"]
+  # Python tests
+  - repo: local
+    hooks:
+      - id: pytest
+        name: pytest
+        stages: [push]
+        entry: python -m pytest tests
+        language: system
+        always_run: true
+        pass_filenames: false
