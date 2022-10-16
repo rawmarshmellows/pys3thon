@@ -8,20 +8,21 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out repository code
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Cache packages
-        uses: actions/cache@v2
+      - uses: actions/setup-python@v4
         with:
-          path: /root/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('setup.py') }}
-      - run: sudo pip install -e '.[dev]'
+          python-version: "3.10.3"
+      - run: pip install --user -e '.[dev]'
       - run: PYTHONPATH=. pytest tests
       - run: git config --global user.name "github-actions"
       - run: git config --global user.email "action@github.com"
-      # - run: pip install twine==3.8.0
-      - run: pip install twine
-      - run: twine --version
+      - run: pip install twine==3.8.0
       # - run: TWINE_USERNAME=__token__ TWINE_PASSWORD=${{ secrets.PYS3_PYPI_TOKEN }} SKIP=commitizen semantic-release publish
+      - name: Setup tmate session
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+        uses: mxschmitt/action-tmate@v3
+      - run: TWINE_USERNAME=__token__ TWINE_PASSWORD=${{ secrets.PYPI_TOKEN }} SKIP=commitizen semantic-release publish
