@@ -19,10 +19,9 @@ jobs:
       - run: git config --global user.name "github-actions"
       - run: git config --global user.email "action@github.com"
       - run: pip install twine==3.8.0
-      # - run: TWINE_USERNAME=__token__ TWINE_PASSWORD=${{ secrets.PYS3_PYPI_TOKEN }} SKIP=commitizen semantic-release publish
-      - name: Setup tmate session
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
-        uses: mxschmitt/action-tmate@v3
+      # - name: Setup tmate session
+      #   env:
+      #     TWINE_USERNAME: __token__
+      #     TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+      #   uses: mxschmitt/action-tmate@v3
       - run: TWINE_USERNAME=__token__ TWINE_PASSWORD=${{ secrets.PYPI_TOKEN }} SKIP=commitizen semantic-release publish
