@@ -1,4 +1,9 @@
+## pys3thon
+
+A wrapper around boto3 S3 Client
+
 ### For development
+
 ```
 pip install '.[dev]'
 pip install pre-commit

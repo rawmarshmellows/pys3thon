@@ -21,7 +21,7 @@ jobs:
       - run: PYTHONPATH=. pytest tests
       - run: git config --global user.name "github-actions"
       - run: git config --global user.email "action@github.com"
+      # - run: pip install twine==3.8.0
       - run: pip install twine
-      # - name: Setup tmate session
-      #   uses: mxschmitt/action-tmate@v3
+      - run: twine --version
       # - run: TWINE_USERNAME=__token__ TWINE_PASSWORD=${{ secrets.PYS3_PYPI_TOKEN }} SKIP=commitizen semantic-release publish
