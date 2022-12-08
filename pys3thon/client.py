@@ -1,4 +1,5 @@
 from contextlib import contextmanager
+from pathlib import Path
 from tempfile import NamedTemporaryFile
 from urllib.parse import unquote
 
@@ -59,8 +60,8 @@ class S3Client:
         else:
             self.client.download_file(bucket, unquote(key), save_prefix)
 
-    def upload_file(self, prefix, bucket, key):
-        self.client.upload_file(prefix, bucket, key)
+    def upload_file(self, path, bucket, key):
+        self.client.upload_file(path, bucket, key)
 
     def upload_fileobj(self, fileobj, bucket, key):
         self.client.upload_fileobj(fileobj, bucket, key)
@@ -176,6 +177,38 @@ class S3Client:
             )
         )
 
+    def sync_folder_from_local_to_s3(
+        self,
+        local_folder_path,
+        destination_bucket,
+        destination_prefix,
+    ):
+        run_shell_command(
+            " ".join(
+                [
+                    "aws",
+                    "s3",
+                    "sync",
+                    local_folder_path,
+                    f'"s3://{destination_bucket}/{destination_prefix}"',
+                ]
+            )
+        )
+
+    def upload_directory(self, directory_path, bucket, prefix):
+        # Convert the local path to a Path object
+        directory_path = Path(directory_path)
+
+        # Walk through the local directory and upload each file
+        for child in directory_path.rglob("*"):
+            # Check if the child is a file
+            if child.is_file():
+                # Compute the full S3 key of the file
+                s3_key = str(Path(prefix) / child.relative_to(directory_path))
+
+                # Upload the file to S3
+                self.upload_file(str(child), bucket, s3_key)
+
     def _construct_s3_paginator(self, bucket, prefix=None, delimiter=None):
         kwargs = {"Bucket": bucket}
         s3_paginator = self.client.get_paginator("list_objects_v2")
@@ -185,4 +218,4 @@ class S3Client:
 
         if delimiter is not None:
             kwargs.update({"Delimiter": delimiter})
-            return s3_paginator.paginate(**kwargs)
+        return s3_paginator.paginate(**kwargs)
