@@ -1,5 +1,9 @@
 <!--next-version-placeholder-->
 
+## v0.2.0 (2022-12-09)
+### Feature
+* Added `upload_directory` ([`0bbead0`](https://github.com/kevinlu1211/pys3thon/commit/0bbead0c6ff0195a4e028e3ad050ee8b571d6950))
+
 ## v0.1.3 (2022-10-16)
 ### Fix
 * Clean up CI ([`824255d`](https://github.com/kevinlu1211/pys3thon/commit/824255dcc6f6f1b124937b35e31b150d1d3a1aa2))
