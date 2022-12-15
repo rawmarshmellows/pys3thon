@@ -1,9 +1,12 @@
+import logging
 from contextlib import contextmanager
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 from urllib.parse import unquote
 
 import boto3
+from botocore.client import Config
+from botocore.exceptions import ClientError
 from tqdm import tqdm
 
 from .utils import run_shell_command
@@ -19,6 +22,8 @@ class S3Client:
             client_kwargs["endpoint_url"] = endpoint_url
         if region_name is not None:
             client_kwargs["region_name"] = region_name
+
+        client_kwargs["config"] = Config(signature_version="s3v4")
 
         self.client = boto3.session.Session(**session_kwargs).client(
             "s3", **client_kwargs
@@ -92,6 +97,14 @@ class S3Client:
             "StorageClass", "STANDARD"
         )
 
+    def delete_directory(self, bucket, prefix):
+        keys = self.get_s3_keys(bucket, prefix)
+        for key in keys:
+            self.delete_object(bucket, key)
+
+    def delete_object(self, bucket, key):
+        self.client.delete_object(Bucket=bucket, Key=key)
+
     def get_s3_keys(self, bucket, prefix=None, delimiter=None):
         keys = []
         try:
@@ -157,6 +170,63 @@ class S3Client:
                 continue
             all_file_contents.append(contents)
         return all_file_contents
+
+    def generate_presigned_get_url(self, bucket, key, expiration=3600):
+        """Generate a presigned URL to share an S3 object
+        :param bucket_name: string
+        :param object_name: string
+        :param expiration: Time in seconds for the presigned URL to remain
+        valid
+        :return: Presigned URL as string. If error, returns None.
+        """
+
+        # Generate a presigned URL for the S3 object
+        try:
+            response = self.client.generate_presigned_url(
+                "get_object",
+                Params={"Bucket": bucket, "Key": key},
+                ExpiresIn=expiration,
+            )
+        except ClientError as e:
+            logging.error(e)
+            return None
+
+        # The response contains the presigned URL
+        return response
+
+    def create_presigned_post_url(
+        self, bucket, key, fields=None, conditions=None, expiration=3600
+    ):
+        """Generate a presigned URL S3 POST request to upload a file
+
+        :param bucket_name: string
+        :param object_name: string
+        :param fields: Dictionary of prefilled form fields
+        :param conditions: List of conditions to include in the policy
+        :param expiration: Time in seconds for the presigned URL to remain
+        valid
+        :return: Dictionary with the following keys:
+            url: URL to post to
+            fields: Dictionary of form fields and values to submit with the
+            POST
+        :return: None if error.
+        """
+
+        # Generate a presigned S3 POST URL
+        try:
+            response = self.client.generate_presigned_post(
+                bucket,
+                key,
+                Fields=fields,
+                Conditions=conditions,
+                ExpiresIn=expiration,
+            )
+        except ClientError as e:
+            logging.error(e)
+            return None
+
+        # The response contains the presigned URL and required fields
+        return response
 
     def sync_folder(
         self,
