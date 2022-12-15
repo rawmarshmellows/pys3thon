@@ -1,5 +1,9 @@
 <!--next-version-placeholder-->
 
+## v0.3.0 (2022-12-15)
+### Feature
+* Implement presigned methods ([`318d960`](https://github.com/kevinlu1211/pys3thon/commit/318d9601b0ffa16b43cb3af3da9ff02927e0946a))
+
 ## v0.2.0 (2022-12-09)
 ### Feature
 * Added `upload_directory` ([`0bbead0`](https://github.com/kevinlu1211/pys3thon/commit/0bbead0c6ff0195a4e028e3ad050ee8b571d6950))
