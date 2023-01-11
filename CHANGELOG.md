@@ -1,5 +1,9 @@
 <!--next-version-placeholder-->
 
+## v0.4.0 (2023-01-11)
+### Feature
+* Implement presigned methods ([`9d62829`](https://github.com/kevinlu1211/pys3thon/commit/9d62829bd384a6c81ed4d9cbdebfb1e911e9ec14))
+
 ## v0.3.0 (2022-12-15)
 ### Feature
 * Implement presigned methods ([`318d960`](https://github.com/kevinlu1211/pys3thon/commit/318d9601b0ffa16b43cb3af3da9ff02927e0946a))
