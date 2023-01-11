@@ -97,6 +97,14 @@ class S3Client:
             "StorageClass", "STANDARD"
         )
 
+    def delete_directory(self, bucket, prefix):
+        keys = self.get_s3_keys(bucket, prefix)
+        for key in keys:
+            self.delete_object(bucket, key)
+
+    def delete_object(self, bucket, key):
+        self.client.delete_object(Bucket=bucket, Key=key)
+
     def get_s3_keys(self, bucket, prefix=None, delimiter=None):
         keys = []
         try:
