@@ -1,10 +1,10 @@
 import logging
 from contextlib import contextmanager
 from pathlib import Path
-from tempfile import NamedTemporaryFile
-from urllib.parse import unquote
+from tempfile import TemporaryDirectory
 
 import boto3
+from boto3.s3.transfer import TransferConfig
 from botocore.client import Config
 from botocore.exceptions import ClientError
 from tqdm import tqdm
@@ -32,15 +32,27 @@ class S3Client:
         self.endpoint_url = endpoint_url
 
     @contextmanager
-    def download_to_temporary_file(self, bucket, key, show_progress=False):
+    def download_to_temporary_file(
+        self, bucket, key, file_name=None, show_progress=False
+    ):
         try:
-            temp_file = NamedTemporaryFile()
-            self.download(bucket, key, temp_file.name, show_progress)
-            yield temp_file.name
+            temp_directory = TemporaryDirectory()
+            if file_name is None:
+                file_name = key.split("/")[-1]
+            save_path = Path(temp_directory.name) / file_name
+            self.download(bucket, key, str(save_path), show_progress)
+            yield save_path
         finally:
-            pass
+            temp_directory.cleanup()
 
-    def download(self, bucket, key, save_prefix, show_progress=False):
+    def download(
+        self,
+        bucket,
+        key,
+        save_prefix,
+        show_progress=False,
+        Config=TransferConfig(),
+    ):
         save_prefix = str(save_prefix)
 
         if show_progress:
@@ -52,7 +64,7 @@ class S3Client:
                 return inner
 
             file_size = float(
-                self.client.head_object(Bucket=bucket, Key=unquote(key))[
+                self.client.head_object(Bucket=bucket, Key=key)[
                     "ContentLength"
                 ]
             )
@@ -60,16 +72,16 @@ class S3Client:
                 total=file_size, unit="B", unit_scale=True, desc=save_prefix
             ) as t:
                 self.client.download_file(
-                    bucket, unquote(key), save_prefix, Callback=hook(t)
+                    bucket, key, save_prefix, Callback=hook(t), Config=Config
                 )
         else:
-            self.client.download_file(bucket, unquote(key), save_prefix)
+            self.client.download_file(bucket, key, save_prefix, Config=Config)
 
-    def upload_file(self, path, bucket, key):
-        self.client.upload_file(path, bucket, key)
+    def upload_file(self, path, bucket, key, Config=TransferConfig()):
+        self.client.upload_file(path, bucket, key, Config=Config)
 
-    def upload_fileobj(self, fileobj, bucket, key):
-        self.client.upload_fileobj(fileobj, bucket, key)
+    def upload_fileobj(self, fileobj, bucket, key, Config=TransferConfig()):
+        self.client.upload_fileobj(fileobj, bucket, key, Config=Config)
 
     def copy(self, source_bucket, source_key, dst_bucket, dst_key):
         self.client.copy(
