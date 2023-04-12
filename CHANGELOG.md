@@ -1,5 +1,9 @@
 <!--next-version-placeholder-->
 
+## v0.4.1 (2023-04-12)
+### Fix
+* Uri encoded keys and add Config option ([`6ce27c0`](https://github.com/rawmarshmellows/pys3thon/commit/6ce27c05d0cdb81e21e5b97973ea0927fc23b8ba))
+
 ## v0.4.0 (2023-01-11)
 ### Feature
 * Implement presigned methods ([`9d62829`](https://github.com/kevinlu1211/pys3thon/commit/9d62829bd384a6c81ed4d9cbdebfb1e911e9ec14))
