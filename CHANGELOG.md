@@ -1,5 +1,9 @@
 <!--next-version-placeholder-->
 
+## v0.5.0 (2023-12-14)
+### Feature
+* Add kwargs to upload files ([`6d09e56`](https://github.com/rawmarshmellows/pys3thon/commit/6d09e563855ce16b8a358616b3731e2868747c10))
+
 ## v0.4.1 (2023-04-12)
 ### Fix
 * Uri encoded keys and add Config option ([`6ce27c0`](https://github.com/rawmarshmellows/pys3thon/commit/6ce27c05d0cdb81e21e5b97973ea0927fc23b8ba))
