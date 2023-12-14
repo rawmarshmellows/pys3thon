@@ -77,11 +77,17 @@ class S3Client:
         else:
             self.client.download_file(bucket, key, save_prefix, Config=Config)
 
-    def upload_file(self, path, bucket, key, Config=TransferConfig()):
-        self.client.upload_file(path, bucket, key, Config=Config)
+    def upload_file(
+        self, path, bucket, key, Config=TransferConfig(), **kwargs
+    ):
+        self.client.upload_file(path, bucket, key, Config=Config, **kwargs)
 
-    def upload_fileobj(self, fileobj, bucket, key, Config=TransferConfig()):
-        self.client.upload_fileobj(fileobj, bucket, key, Config=Config)
+    def upload_fileobj(
+        self, fileobj, bucket, key, Config=TransferConfig(), **kwargs
+    ):
+        self.client.upload_fileobj(
+            fileobj, bucket, key, Config=Config, **kwargs
+        )
 
     def copy(self, source_bucket, source_key, dst_bucket, dst_key):
         self.client.copy(
