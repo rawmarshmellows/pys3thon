@@ -2,12 +2,12 @@ from pathlib import Path
 from uuid import uuid4
 
 import boto3
-from moto import mock_s3
+from moto import mock_aws
 
 from pys3thon.client import S3Client
 
 
-@mock_s3
+@mock_aws
 def test_upload_file(tmpdir):
     tmpdir = Path(tmpdir)
     conn = boto3.resource("s3", region_name="ap-southeast-2")
@@ -28,7 +28,7 @@ def test_upload_file(tmpdir):
     assert s3_client.check_if_exists_in_s3(source_bucket, source_key)
 
 
-@mock_s3
+@mock_aws
 def test_upload_file_with_key_that_is_uri_encoded(tmpdir):
     tmpdir = Path(tmpdir)
     conn = boto3.resource("s3", region_name="ap-southeast-2")
@@ -49,7 +49,7 @@ def test_upload_file_with_key_that_is_uri_encoded(tmpdir):
     assert s3_client.check_if_exists_in_s3(source_bucket, source_key)
 
 
-@mock_s3
+@mock_aws
 def test_upload_file_with_key_that_is_not_uri_encoded_with_spaces(tmpdir):
     tmpdir = Path(tmpdir)
     conn = boto3.resource("s3", region_name="ap-southeast-2")
