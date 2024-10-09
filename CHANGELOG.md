@@ -1,5 +1,9 @@
 <!--next-version-placeholder-->
 
+## v0.5.1 (2024-10-09)
+### Fix
+* Allow client to be initialised with credentials ([`e830f06`](https://github.com/rawmarshmellows/pys3thon/commit/e830f06d4e40605e8c6da38352d46cbc77ad93a5))
+
 ## v0.5.0 (2023-12-14)
 ### Feature
 * Add kwargs to upload files ([`6d09e56`](https://github.com/rawmarshmellows/pys3thon/commit/6d09e563855ce16b8a358616b3731e2868747c10))
