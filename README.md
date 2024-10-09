@@ -12,7 +12,12 @@ pre-commit install --hook-type commit-msg # this is for commitizen to work
 pre-commit install --hook-type pre-push # this is for a pytest on push to work
 ```
 
-### To run the tests
+### To run the tests locally
 ```
 PYTHONPATH=. ptw --run 'pytest -sv tests'
+```
+
+### To run the tests with real infra
+```
+PYTHONPATH=. TEST_ENV=remote ptw --run 'pytest -sv tests'
 ```

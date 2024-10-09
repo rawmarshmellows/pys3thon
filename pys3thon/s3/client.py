@@ -9,11 +9,13 @@ from botocore.client import Config
 from botocore.exceptions import ClientError
 from tqdm import tqdm
 
-from .utils import run_shell_command
+from ..utils import run_shell_command
 
 
 class S3Client:
-    def __init__(self, profile_name=None, credentials=None, endpoint_url=None, region_name=None):
+    def __init__(
+        self, profile_name=None, credentials=None, endpoint_url=None, region_name=None
+    ):
         """
         Initialize the S3Client with optional AWS credentials and configuration.
 
@@ -37,7 +39,9 @@ class S3Client:
             assert "aws_access_key_id" in credentials
             assert "aws_secret_access_key" in credentials
             client_kwargs["aws_access_key_id"] = credentials["aws_access_key_id"]
-            client_kwargs["aws_secret_access_key"] = credentials["aws_secret_access_key"]
+            client_kwargs["aws_secret_access_key"] = credentials[
+                "aws_secret_access_key"
+            ]
 
         # Configure other client parameters
         if endpoint_url:
@@ -58,7 +62,9 @@ class S3Client:
         self.region_name = region_name
 
     @contextmanager
-    def download_to_temporary_file(self, bucket, key, file_name=None, show_progress=False):
+    def download_to_temporary_file(
+        self, bucket, key, file_name=None, show_progress=False
+    ):
         try:
             temp_directory = TemporaryDirectory()
             if file_name is None:
@@ -87,9 +93,15 @@ class S3Client:
 
                 return inner
 
-            file_size = float(self.client.head_object(Bucket=bucket, Key=key)["ContentLength"])
-            with tqdm(total=file_size, unit="B", unit_scale=True, desc=save_prefix) as t:
-                self.client.download_file(bucket, key, save_prefix, Callback=hook(t), Config=Config)
+            file_size = float(
+                self.client.head_object(Bucket=bucket, Key=key)["ContentLength"]
+            )
+            with tqdm(
+                total=file_size, unit="B", unit_scale=True, desc=save_prefix
+            ) as t:
+                self.client.download_file(
+                    bucket, key, save_prefix, Callback=hook(t), Config=Config
+                )
         else:
             self.client.download_file(bucket, key, save_prefix, Config=Config)
 
@@ -100,7 +112,9 @@ class S3Client:
         self.client.upload_fileobj(fileobj, bucket, key, Config=Config, **kwargs)
 
     def copy(self, source_bucket, source_key, dst_bucket, dst_key):
-        self.client.copy({"Bucket": source_bucket, "Key": source_key}, dst_bucket, dst_key)
+        self.client.copy(
+            {"Bucket": source_bucket, "Key": source_key}, dst_bucket, dst_key
+        )
 
     def check_if_exists_in_s3(self, bucket, key):
         try:
@@ -119,7 +133,9 @@ class S3Client:
         return self.client.head_object(Bucket=bucket, Key=key)
 
     def get_object_storage_class(self, bucket, key):
-        return self.client.head_object(Bucket=bucket, Key=key).get("StorageClass", "STANDARD")
+        return self.client.head_object(Bucket=bucket, Key=key).get(
+            "StorageClass", "STANDARD"
+        )
 
     def delete_directory(self, bucket, prefix):
         keys = self.get_s3_keys(bucket, prefix)
@@ -140,32 +156,42 @@ class S3Client:
 
     def get_top_level_bucket_keys(self, bucket):
         keys = []
-        for prefix in self._construct_s3_paginator(bucket, delimiter="/").search("CommonPrefixes"):
+        for prefix in self._construct_s3_paginator(bucket, delimiter="/").search(
+            "CommonPrefixes"
+        ):
             keys.append(prefix.get("Prefix"))
         return keys
 
-    def get_directories_for_bucket_with_prefix_recursively(self, bucket, prefix=None, delimiter="/", log_every=100):
+    def get_directories_for_bucket_with_prefix_recursively(
+        self, bucket, prefix=None, delimiter="/", log_every=100
+    ):
         prefixes_parsed = 0
         stack = [prefix]
         all_prefixes = []
         while len(stack) > 0:
             prefix = stack.pop()
             if prefix is None:
-                sub_prefixes = self.get_directories_for_bucket_with_prefix(bucket, delimiter=delimiter)
+                sub_prefixes = self.get_directories_for_bucket_with_prefix(
+                    bucket, delimiter=delimiter
+                )
             else:
                 all_prefixes.append(prefix)
-                sub_prefixes = self.get_directories_for_bucket_with_prefix(bucket, prefix, delimiter)
+                sub_prefixes = self.get_directories_for_bucket_with_prefix(
+                    bucket, prefix, delimiter
+                )
             stack.extend(sub_prefixes)
             prefixes_parsed += 1
             if prefixes_parsed % log_every == 0:
                 print(f"Parsed: {prefixes_parsed}")
         return all_prefixes
 
-    def get_directories_for_bucket_with_prefix(self, bucket, prefix=None, delimiter="/"):
+    def get_directories_for_bucket_with_prefix(
+        self, bucket, prefix=None, delimiter="/"
+    ):
         keys = []
-        for prefix in self._construct_s3_paginator(bucket, prefix=prefix, delimiter=delimiter).search(
-            "CommonPrefixes"
-        ):
+        for prefix in self._construct_s3_paginator(
+            bucket, prefix=prefix, delimiter=delimiter
+        ).search("CommonPrefixes"):
             if prefix is None:
                 continue
             keys.append(prefix.get("Prefix"))
@@ -173,7 +199,9 @@ class S3Client:
 
     def get_files_for_bucket_with_prefix(self, bucket, prefix, delimiter="/"):
         all_file_contents = []
-        for contents in self._construct_s3_paginator(bucket, prefix=prefix, delimiter=delimiter).search("Contents"):
+        for contents in self._construct_s3_paginator(
+            bucket, prefix=prefix, delimiter=delimiter
+        ).search("Contents"):
             if contents is None:
                 continue
             if contents["Key"] == prefix:
@@ -204,7 +232,9 @@ class S3Client:
         # The response contains the presigned URL
         return response
 
-    def create_presigned_post_url(self, bucket, key, fields=None, conditions=None, expiration=3600):
+    def create_presigned_post_url(
+        self, bucket, key, fields=None, conditions=None, expiration=3600
+    ):
         """Generate a presigned URL S3 POST request to upload a file
 
         :param bucket_name: string

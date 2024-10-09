@@ -1,7 +1,7 @@
 import boto3
 from moto import mock_aws
 
-from pys3thon.client import S3Client
+from pys3thon.s3.client import S3Client
 
 
 @mock_aws
