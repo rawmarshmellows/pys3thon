@@ -2,12 +2,12 @@ from pathlib import Path
 from uuid import uuid4
 
 import boto3
-from moto import mock_s3
+from moto import mock_aws
 
 from pys3thon.client import S3Client
 
 
-@mock_s3
+@mock_aws
 def test_persist_file(tmpdir):
     tmpdir = Path(tmpdir)
     conn = boto3.resource("s3", region_name="ap-southeast-2")
@@ -29,13 +29,11 @@ def test_persist_file(tmpdir):
     s3_client.upload_file(tmp_file_path, source_bucket, source_key)
     assert s3_client.check_if_exists_in_s3(source_bucket, source_key)
 
-    s3_client.copy(
-        source_bucket, source_key, destination_bucket, destination_key
-    )
+    s3_client.copy(source_bucket, source_key, destination_bucket, destination_key)
     assert s3_client.check_if_exists_in_s3(destination_bucket, destination_key)
 
 
-@mock_s3
+@mock_aws
 def test_persist_file_for_uri_encoded_file(tmpdir):
     tmpdir = Path(tmpdir)
     conn = boto3.resource("s3", region_name="ap-southeast-2")
@@ -57,7 +55,5 @@ def test_persist_file_for_uri_encoded_file(tmpdir):
     s3_client.upload_file(tmp_file_path, source_bucket, source_key)
     assert s3_client.check_if_exists_in_s3(source_bucket, source_key)
 
-    s3_client.copy(
-        source_bucket, source_key, destination_bucket, destination_key
-    )
+    s3_client.copy(source_bucket, source_key, destination_bucket, destination_key)
     assert s3_client.check_if_exists_in_s3(destination_bucket, destination_key)

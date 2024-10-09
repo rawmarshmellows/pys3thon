@@ -14,8 +14,9 @@ setup(
         "dev": [
             "pytest==7.1.3",
             "pytest-mock==3.10.0",
+            "pytest-only",
             "python-semantic-release==7.32.1",
-            "moto==4.0.7",
+            "moto>=5.0",
             "flake8==5.0.4",
             "black==22.10.0",
             "isort==5.10.1",

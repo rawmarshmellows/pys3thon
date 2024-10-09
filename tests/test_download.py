@@ -3,12 +3,12 @@ from pathlib import Path
 from uuid import uuid4
 
 import boto3
-from moto import mock_s3
+from moto import mock_aws
 
 from pys3thon.client import S3Client
 
 
-@mock_s3
+@mock_aws
 def test_download_file(tmpdir):
     tmpdir = Path(tmpdir)
     conn = boto3.resource("s3", region_name="ap-southeast-2")
@@ -36,7 +36,7 @@ def test_download_file(tmpdir):
         assert False, str(e)
 
 
-@mock_s3
+@mock_aws
 def test_download_file_with_key_that_is_uri_encoded(tmpdir):
     tmpdir = Path(tmpdir)
     conn = boto3.resource("s3", region_name="ap-southeast-2")
@@ -64,7 +64,7 @@ def test_download_file_with_key_that_is_uri_encoded(tmpdir):
         assert False, str(e)
 
 
-@mock_s3
+@mock_aws
 def test_download_to_temporary_file(tmpdir):
     tmpdir = Path(tmpdir)
     conn = boto3.resource("s3", region_name="ap-southeast-2")
@@ -86,9 +86,7 @@ def test_download_to_temporary_file(tmpdir):
     assert s3_client.check_if_exists_in_s3(source_bucket, source_key)
 
     try:
-        with s3_client.download_to_temporary_file(
-            source_bucket, source_key
-        ) as temp_file_path:
+        with s3_client.download_to_temporary_file(source_bucket, source_key) as temp_file_path:
             assert Path(temp_file_path).name == source_key.split("/")[-1]
             assert Path(temp_file_path).exists()
             assert os.stat(temp_file_path).st_size == object_size
@@ -97,7 +95,7 @@ def test_download_to_temporary_file(tmpdir):
         assert False, str(e)
 
 
-@mock_s3
+@mock_aws
 def test_download_to_temporary_file_with_specified_file_name(tmpdir):
     tmpdir = Path(tmpdir)
     conn = boto3.resource("s3", region_name="ap-southeast-2")
