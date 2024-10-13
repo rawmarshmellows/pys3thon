@@ -1,5 +1,9 @@
 <!--next-version-placeholder-->
 
+## v0.6.0 (2024-10-13)
+### Feature
+* Opendal integration with S3, and Azure ([`ab2aa41`](https://github.com/rawmarshmellows/pys3thon/commit/ab2aa4147ffc2e0f04943708e9a9176831a24bcf))
+
 ## v0.5.1 (2024-10-09)
 ### Fix
 * Allow client to be initialised with credentials ([`e830f06`](https://github.com/rawmarshmellows/pys3thon/commit/e830f06d4e40605e8c6da38352d46cbc77ad93a5))
