@@ -1,5 +1,9 @@
 <!--next-version-placeholder-->
 
+## v0.6.1 (2024-10-13)
+### Fix
+* Add init files ([`0198bcc`](https://github.com/rawmarshmellows/pys3thon/commit/0198bcc215a87b92f54411e1ec0e54b2347c80f8))
+
 ## v0.6.0 (2024-10-13)
 ### Feature
 * Opendal integration with S3, and Azure ([`ab2aa41`](https://github.com/rawmarshmellows/pys3thon/commit/ab2aa4147ffc2e0f04943708e9a9176831a24bcf))
