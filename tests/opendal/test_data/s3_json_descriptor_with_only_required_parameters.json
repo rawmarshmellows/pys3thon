@@ -2,6 +2,7 @@
   "scheme": "S3",
   "bucket": "test-bucket",
   "key": "test-key",
+  "region": "us-west-2",
   "awsAccessKeyId": "test-access",
   "encryptedAwsSecretAccessKey": "test-secret"
 }

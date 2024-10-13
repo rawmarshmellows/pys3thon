@@ -3,6 +3,8 @@ from contextlib import contextmanager
 from dataclasses import dataclass
 from enum import Enum
 
+import opendal.exceptions as opendal_exceptions
+
 
 class StorageScheme(Enum):
     S3 = "S3"
@@ -13,7 +15,7 @@ class StorageScheme(Enum):
 @dataclass
 class JSONStorageDescriptor:
     @staticmethod
-    def create_from_json(json_descriptor):
+    def create_from_json_descriptor(json_descriptor):
         from .s3.descriptor import S3JSONStorageDescriptor
 
         if json_descriptor["scheme"] == StorageScheme.S3.value:
@@ -40,7 +42,7 @@ class StorageDescriptor(ABC):
         self.is_decrypted = True
 
     @staticmethod
-    def create_storage_descriptor_from_json_storage_descriptor(
+    def create_from_json_storage_descriptor(
         json_descriptor: JSONStorageDescriptor,
     ):
         from .s3.descriptor import S3JSONStorageDescriptor, S3StorageDescriptor
@@ -60,7 +62,7 @@ class StorageDescriptor(ABC):
 
 class OpenDALClient(ABC):
     @staticmethod
-    def create_opendal_client_from_storage_descriptor(
+    def create_from_storage_descriptor(
         storage_descriptor: StorageDescriptor,
     ):
         from .s3.client import OpenDALS3Client
@@ -94,4 +96,13 @@ class OpenDALClient(ABC):
         self.operator.write(path, data)
 
     def delete(self, path: str):
-        self.operator.delete(path)
+        try:
+            self.operator.delete(path)
+            self.stat(path)
+        except opendal_exceptions.NotFound:
+            # need to explicity catch the failed read as OpenDAL doesn't error when delete fails
+            pass
+        except Exception as e:
+            print(e)
+            assert False, f"{path} not deleted"
+
