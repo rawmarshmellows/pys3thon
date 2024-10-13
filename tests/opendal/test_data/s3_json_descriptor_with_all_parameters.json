@@ -1,0 +1,9 @@
+{
+  "scheme": "S3",
+  "bucket": "test-bucket",
+  "key": "test-key",
+  "awsAccessKeyId": "test-access",
+  "encryptedAwsSecretAccessKey": "test-secret",
+  "region": "test-region",
+  "endpoint": "test-endpoint"
+}

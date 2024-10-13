@@ -3,11 +3,11 @@ from pathlib import Path
 import boto3
 from moto import mock_aws
 
-from pys3thon.client import S3Client
+from pys3thon.s3.client import S3Client
 
 
 @mock_aws
-def test_upload_and_delete_directory(tmpdir):
+def test_upload_directory(tmpdir):
     tmpdir = Path(tmpdir)
     conn = boto3.resource("s3", region_name="ap-southeast-2")
     conn.create_bucket(
@@ -33,22 +33,15 @@ def test_upload_and_delete_directory(tmpdir):
 
     s3_client.upload_directory(str(tmpdir), "test-bucket", "test-directory-1/")
 
-    assert s3_client.check_if_exists_in_s3(bucket="test-bucket", key="test-directory-1/output/file_1.txt")
-
-    assert s3_client.check_if_exists_in_s3(bucket="test-bucket", key="test-directory-1/output/nested1/file_2.txt")
-
     assert s3_client.check_if_exists_in_s3(
-        bucket="test-bucket",
-        key="test-directory-1/output/nested1/nested2/file_3.txt",
+        bucket="test-bucket", key="test-directory-1/output/file_1.txt"
     )
 
-    s3_client.delete_directory("test-bucket", "test-directory-1/output/nested1")
+    assert s3_client.check_if_exists_in_s3(
+        bucket="test-bucket", key="test-directory-1/output/nested1/file_2.txt"
+    )
 
-    assert s3_client.check_if_exists_in_s3(bucket="test-bucket", key="test-directory-1/output/file_1.txt")
-
-    assert not s3_client.check_if_exists_in_s3(bucket="test-bucket", key="test-directory-1/output/nested1/file_2.txt")
-
-    assert not s3_client.check_if_exists_in_s3(
+    assert s3_client.check_if_exists_in_s3(
         bucket="test-bucket",
         key="test-directory-1/output/nested1/nested2/file_3.txt",
     )

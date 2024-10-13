@@ -5,7 +5,7 @@ from uuid import uuid4
 import boto3
 from moto import mock_aws
 
-from pys3thon.client import S3Client
+from pys3thon.s3.client import S3Client
 
 
 @mock_aws
@@ -86,7 +86,9 @@ def test_download_to_temporary_file(tmpdir):
     assert s3_client.check_if_exists_in_s3(source_bucket, source_key)
 
     try:
-        with s3_client.download_to_temporary_file(source_bucket, source_key) as temp_file_path:
+        with s3_client.download_to_temporary_file(
+            source_bucket, source_key
+        ) as temp_file_path:
             assert Path(temp_file_path).name == source_key.split("/")[-1]
             assert Path(temp_file_path).exists()
             assert os.stat(temp_file_path).st_size == object_size

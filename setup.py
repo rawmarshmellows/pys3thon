@@ -9,7 +9,12 @@ setup(
     author_email="kevinyihchyunlu@gmail.com",
     license="MIT",
     packages=find_packages(exclude=["tests", "tests/*"]),
-    install_requires=["boto3==1.24.89", "tqdm==4.64.0", "pyOpenSSL==22.1.0"],
+    install_requires=[
+        "boto3>=1.24.89",
+        "tqdm==4.64.0",
+        "pyOpenSSL==22.1.0",
+        "opendal==0.45.2",
+    ],
     extras_require={
         "dev": [
             "pytest==7.1.3",
@@ -23,6 +28,7 @@ setup(
             "pytest-watch==4.2.0",
             "pre-commit==2.20.0",
             "click==8.1.3",
+            "python-dotenv==1.0.1",
         ]
     },
 )

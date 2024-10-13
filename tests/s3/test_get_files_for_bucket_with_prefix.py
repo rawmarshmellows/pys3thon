@@ -3,7 +3,7 @@ import io
 import boto3
 from moto import mock_aws
 
-from pys3thon.client import S3Client
+from pys3thon.s3.client import S3Client
 
 
 @mock_aws
@@ -20,7 +20,9 @@ def test_get_files_for_bucket_with_no_files_in_root_prefix():
         key="test-directory-1/subdirectory-1/test_fileobj-1.txt",
     )
 
-    file_contents = s3_client.get_files_for_bucket_with_prefix(bucket="test-bucket", prefix="test-directory-1/")
+    file_contents = s3_client.get_files_for_bucket_with_prefix(
+        bucket="test-bucket", prefix="test-directory-1/"
+    )
 
     assert len(file_contents) == 0
 
@@ -40,7 +42,9 @@ def test_get_files_for_bucket_with_prefix_for_less_than_999_files():
             key=f"test-directory-1/test_fileobj-{i}.txt",
         )
 
-    file_contents = s3_client.get_files_for_bucket_with_prefix(bucket="test-bucket", prefix="test-directory-1/")
+    file_contents = s3_client.get_files_for_bucket_with_prefix(
+        bucket="test-bucket", prefix="test-directory-1/"
+    )
 
     assert len(file_contents) == 10
     assert sorted([file_content["Key"] for file_content in file_contents]) == [
@@ -63,7 +67,9 @@ def test_get_files_for_bucket_with_prefix_for_more_than_999_files():
             key=f"test-directory-1/test_fileobj-{i}.txt",
         )
 
-    file_contents = s3_client.get_files_for_bucket_with_prefix(bucket="test-bucket", prefix="test-directory-1/")
+    file_contents = s3_client.get_files_for_bucket_with_prefix(
+        bucket="test-bucket", prefix="test-directory-1/"
+    )
 
     # assert s3_client.check_if_exists_in_s3(
     #     bucket="test-bucket", key="test-directory-1/test_fileobj-1000.txt")

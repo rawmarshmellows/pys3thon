@@ -3,7 +3,7 @@ import io
 import boto3
 from moto import mock_aws
 
-from pys3thon.client import S3Client
+from pys3thon.s3.client import S3Client
 
 
 @mock_aws
@@ -22,7 +22,9 @@ def test_get_directories_for_bucket_with_prefix_recursively_works_on_bucket_root
         key="test-directory/test_fileobj.txt",
     )
 
-    directories = s3_client.get_directories_for_bucket_with_prefix_recursively(bucket="test-bucket", prefix=None)
+    directories = s3_client.get_directories_for_bucket_with_prefix_recursively(
+        bucket="test-bucket", prefix=None
+    )
     assert directories == ["test-directory/"]
 
 
@@ -51,7 +53,9 @@ def test_get_directories_for_bucket_with_prefix_recursively_works_on_bucket_root
         key="test-directory-3/test_fileobj.txt",
     )
 
-    directories = s3_client.get_directories_for_bucket_with_prefix_recursively(bucket="test-bucket", prefix=None)
+    directories = s3_client.get_directories_for_bucket_with_prefix_recursively(
+        bucket="test-bucket", prefix=None
+    )
 
     assert sorted(directories) == [
         "test-directory-1/",
@@ -76,7 +80,9 @@ def test_get_directories_for_bucket_with_prefix_recursively_works_on_bucket_root
         key="test-directory/a/b/c/test_fileobj.txt",
     )
 
-    directories = s3_client.get_directories_for_bucket_with_prefix_recursively(bucket="test-bucket", prefix=None)
+    directories = s3_client.get_directories_for_bucket_with_prefix_recursively(
+        bucket="test-bucket", prefix=None
+    )
     assert sorted(directories) == [
         "test-directory/",
         "test-directory/a/",
@@ -111,7 +117,9 @@ def test_get_directories_for_bucket_with_prefix_recursively_works_on_bucket_root
         key="test-directory-3/a/b/c/test_fileobj.txt",
     )
 
-    directories = s3_client.get_directories_for_bucket_with_prefix_recursively(bucket="test-bucket", prefix=None)
+    directories = s3_client.get_directories_for_bucket_with_prefix_recursively(
+        bucket="test-bucket", prefix=None
+    )
 
     assert sorted(directories) == [
         "test-directory-1/",
