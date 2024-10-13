@@ -2,11 +2,11 @@ import os
 import time
 
 import pytest
+import opendal.exceptions as opendal_exceptions
 
 from pys3thon.opendal.s3.descriptor import S3StorageDescriptor
 from pys3thon.opendal.service import OpenDALService
 from pys3thon.opendal.shared import OpenDALClient
-from tests.utils import cleanup
 
 
 @pytest.mark.skipif(
@@ -24,7 +24,7 @@ def test_copy(tmpdir, opendal_operators, opendal_remote_configs):
         aws_access_key_id=opendal_remote_configs["s3"]["access_key_id"],
         aws_secret_access_key=opendal_remote_configs["s3"]["secret_access_key"],
     )
-    source_client = OpenDALClient.create_opendal_client_from_storage_descriptor(
+    source_client = OpenDALClient.create_from_storage_descriptor(
         source_descriptor
     )
 
@@ -34,7 +34,7 @@ def test_copy(tmpdir, opendal_operators, opendal_remote_configs):
         aws_access_key_id=opendal_remote_configs["s3"]["access_key_id"],
         aws_secret_access_key=opendal_remote_configs["s3"]["secret_access_key"],
     )
-    destination_client = OpenDALClient.create_opendal_client_from_storage_descriptor(
+    destination_client = OpenDALClient.create_from_storage_descriptor(
         destination_descriptor
     )
 
@@ -61,8 +61,8 @@ def test_copy(tmpdir, opendal_operators, opendal_remote_configs):
         # read from destination bucket
         assert destination_client.read(destination_descriptor.path) == b"Hello, world!"
     finally:
-        cleanup(source_client, source_descriptor.path)
-        cleanup(destination_client, destination_descriptor.path)
+        source_client.delete(source_descriptor.path)
+        destination_client.delete(destination_descriptor.path)
 
 @pytest.mark.skipif(
     os.environ.get("TEST_ENV") != "remote", reason="requires TEST_ENV=remote"
@@ -78,7 +78,7 @@ def test_download(tmpdir, opendal_operators, opendal_remote_configs):
         aws_access_key_id=opendal_remote_configs["s3"]["access_key_id"],
         aws_secret_access_key=opendal_remote_configs["s3"]["secret_access_key"],
     )
-    client = OpenDALClient.create_opendal_client_from_storage_descriptor(descriptor)
+    client = OpenDALClient.create_from_storage_descriptor(descriptor)
 
     tmp_file_path = str(tmpdir / "test.txt")
     with open(tmp_file_path, "w") as local_file:
@@ -98,7 +98,7 @@ def test_download(tmpdir, opendal_operators, opendal_remote_configs):
         downloaded_file = open(download_path, "r")
         assert downloaded_file.read() == "Hello, world!"
     finally:
-        cleanup(client, descriptor.path)
+        client.delete(descriptor.path)
 
 @pytest.mark.skipif(
     os.environ.get("TEST_ENV") != "remote", reason="requires TEST_ENV=remote"
@@ -114,7 +114,7 @@ def test_download_to_temporary_file(tmpdir, opendal_operators, opendal_remote_co
         aws_access_key_id=opendal_remote_configs["s3"]["access_key_id"],
         aws_secret_access_key=opendal_remote_configs["s3"]["secret_access_key"],
     )
-    client = OpenDALClient.create_opendal_client_from_storage_descriptor(descriptor)
+    client = OpenDALClient.create_from_storage_descriptor(descriptor)
 
     tmp_file_path = str(tmpdir / "test.txt")
     with open(tmp_file_path, "w") as local_file:
@@ -132,4 +132,4 @@ def test_download_to_temporary_file(tmpdir, opendal_operators, opendal_remote_co
             downloaded_file = open(download_path, "r")
             assert downloaded_file.read() == "Hello, world!"
     finally:
-        cleanup(client, descriptor.path)
+        client.delete(descriptor.path)
