@@ -1,5 +1,9 @@
 <!--next-version-placeholder-->
 
+## v0.6.2 (2024-10-13)
+### Fix
+* Try catch for deletion and rename factory methods ([`c120f04`](https://github.com/rawmarshmellows/pys3thon/commit/c120f04caae943e9118ed7a8c47157636e3b1816))
+
 ## v0.6.1 (2024-10-13)
 ### Fix
 * Add init files ([`0198bcc`](https://github.com/rawmarshmellows/pys3thon/commit/0198bcc215a87b92f54411e1ec0e54b2347c80f8))
