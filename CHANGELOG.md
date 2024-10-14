@@ -1,5 +1,10 @@
 <!--next-version-placeholder-->
 
+## v0.6.3 (2024-10-14)
+### Fix
+* Add presign read ([`03be2c9`](https://github.com/rawmarshmellows/pys3thon/commit/03be2c9f66b7028f16c067202d9fd6a34b50a6fd))
+* Add presign read ([`65c0203`](https://github.com/rawmarshmellows/pys3thon/commit/65c0203029a294cb289714cf542b705b21eb2262))
+
 ## v0.6.2 (2024-10-13)
 ### Fix
 * Try catch for deletion and rename factory methods ([`c120f04`](https://github.com/rawmarshmellows/pys3thon/commit/c120f04caae943e9118ed7a8c47157636e3b1816))
