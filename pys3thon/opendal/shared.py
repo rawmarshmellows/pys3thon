@@ -3,6 +3,7 @@ from contextlib import contextmanager
 from dataclasses import dataclass
 from enum import Enum
 
+from asgiref.sync import async_to_sync
 import opendal.exceptions as opendal_exceptions
 
 
@@ -85,6 +86,12 @@ class OpenDALClient(ABC):
 
     def read(self, path: str):
         return self.operator.read(path)
+    
+    def presign_read(self, path: str, expiration: int):
+        async def get_presigned_url():
+            presigned_read = await self.operator.to_async_operator().presign_read(path, expiration)
+            return presigned_read
+        return async_to_sync(get_presigned_url)()
 
     def stat(self, path: str):
         return self.operator.stat(path)
