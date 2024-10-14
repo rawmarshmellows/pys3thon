@@ -72,7 +72,6 @@ def test_write_and_read(tmpdir, opendal_operators, opendal_remote_configs):
     finally:
         client.delete(descriptor.path)
 
-@pytest.mark.only
 @pytest.mark.skipif(
     os.environ.get("TEST_ENV") != "remote", reason="requires TEST_ENV=remote"
 )
