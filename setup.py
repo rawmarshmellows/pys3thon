@@ -13,7 +13,7 @@ setup(
         "boto3>=1.24.89",
         "tqdm==4.64.0",
         "pyOpenSSL==22.1.0",
-        "opendal==0.45.2",
+        "opendal>=0.45.2",
         "asgiref==3.8.1"
     ],
     extras_require={
