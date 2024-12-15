@@ -1,6 +1,6 @@
 ## pys3thon
 
-A wrapper around boto3 S3 Client
+A wrapper around boto3 S3 Client and OpenDAL
 
 ### For development
 1. Start by opening the development container
