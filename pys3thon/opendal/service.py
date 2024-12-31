@@ -1,8 +1,10 @@
+from contextlib import contextmanager
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from contextlib import contextmanager
 
 from opendal import Operator
+
+DEFAULT_CHUNK_SIZE_25MB = 25 * 1024 * 1024
 
 
 class OpenDALService:
@@ -12,7 +14,7 @@ class OpenDALService:
         source_path,
         destination_client,
         destination_path,
-        read_chunk_size=1024,
+        read_chunk_size=DEFAULT_CHUNK_SIZE_25MB,
     ):
         with source_client.open(source_path, "rb") as source_file:
             with destination_client.open(destination_path, "wb") as destination_file:
@@ -34,7 +36,9 @@ class OpenDALService:
         self.copy(source_client, source_path, destination_client, destination_path)
 
     @contextmanager
-    def download_to_temporary_file(self, download_client, download_from_path, file_name=None):
+    def download_to_temporary_file(
+        self, download_client, download_from_path, file_name=None
+    ):
         download_from_path = str(download_from_path)
         try:
             temp_directory = TemporaryDirectory()

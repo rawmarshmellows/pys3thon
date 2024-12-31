@@ -14,7 +14,8 @@ setup(
         "tqdm==4.64.0",
         "pyOpenSSL==22.1.0",
         "opendal>=0.45.2",
-        "asgiref==3.8.1"
+        "smart_open==7.1.0",
+        "asgiref==3.8.1",
     ],
     extras_require={
         "dev": [
@@ -26,7 +27,7 @@ setup(
             "flake8==5.0.4",
             "black==22.10.0",
             "isort==5.10.1",
-            "pytest-watch==4.2.0",
+            "pytest-watcher==0.4.3",
             "pre-commit==2.20.0",
             "click==8.1.3",
             "python-dotenv==1.0.1",

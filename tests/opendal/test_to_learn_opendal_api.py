@@ -3,8 +3,12 @@ from pathlib import Path
 
 import pytest
 
+
 @pytest.mark.skipif(
     os.environ.get("TEST_ENV") != "remote", reason="requires TEST_ENV=remote"
+)
+@pytest.mark.skipif(
+    os.path.exists("/.dockerenv"), reason="opendal doesn't work when it's in docker"
 )
 def test_opendal_s3_operator(tmpdir, opendal_operators):
     # Create a temporary file to upload
@@ -21,8 +25,12 @@ def test_opendal_s3_operator(tmpdir, opendal_operators):
     s3_downloaded_content = s3_operator.read("/test_file_s3.txt")
     assert s3_downloaded_content == b"This is a test file for S3"
 
+
 @pytest.mark.skipif(
     os.environ.get("TEST_ENV") != "remote", reason="requires TEST_ENV=remote"
+)
+@pytest.mark.skipif(
+    os.path.exists("/.dockerenv"), reason="opendal doesn't work when it's in docker"
 )
 def test_opendal_azure_operator(tmpdir, opendal_operators):
     # Create a temporary file to upload
