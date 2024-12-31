@@ -328,3 +328,14 @@ class S3Client:
             kwargs.update({"Delimiter": delimiter})
         paginate = s3_paginator.paginate(**kwargs)
         return paginate
+
+    def get_streaming_body(self, bucket, key):
+        """
+        Get a streaming body for an S3 object that supports read operations.
+
+        :param bucket: S3 bucket name
+        :param key: S3 object key
+        :return: A file-like object that supports read operations
+        """
+        response = self.client.get_object(Bucket=bucket, Key=key)
+        return response["Body"]

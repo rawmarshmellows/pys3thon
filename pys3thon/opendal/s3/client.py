@@ -1,5 +1,8 @@
-from opendal import Operator
+from io import BytesIO, IOBase
 
+from smart_open import open
+
+from ...s3.client import S3Client
 from ..shared import OpenDALClient
 
 
@@ -18,29 +21,69 @@ class OpenDALS3Client(OpenDALClient):
         :param bucket: Name of the S3 bucket.
         :param region: AWS region name.
         :param endpoint: Custom S3 endpoint URL.
-        :param access_key: AWS access key ID.
-        :param secret_key: AWS secret access key.
+        :param access_key_id: AWS access key ID.
+        :param secret_access_key: AWS secret access key.
         """
-        s3_config = {
-            "bucket": bucket,
-        }
-
-        if region:
-            s3_config["region"] = region
-        if endpoint:
-            s3_config["endpoint"] = endpoint
-        if access_key_id:
-            s3_config["access_key_id"] = access_key_id
-        if access_key_id:
-            s3_config["secret_access_key"] = secret_access_key
-
-        # Initialize opendal S3 operator
-        self.operator = Operator("s3", **s3_config)
         self._bucket = bucket
         self._region = region
         self._endpoint = endpoint
         self._access_key_id = access_key_id
         self._secret_access_key = secret_access_key
+
+        # Initialize S3 client with credentials
+        credentials = None
+        if access_key_id and secret_access_key:
+            credentials = {
+                "aws_access_key_id": access_key_id,
+                "aws_secret_access_key": secret_access_key,
+            }
+
+        self.operator = S3Client(
+            credentials=credentials,
+            endpoint_url=endpoint,
+            region_name=region,
+        )
+
+    def read(self, path: str) -> bytes:
+        with self.operator.download_to_temporary_file(self._bucket, path) as temp_file:
+            with open(temp_file, "rb") as f:
+                return f.read()
+
+    def presign_read(self, path: str, expiration: int) -> str:
+        class PresignedUrl:
+            def __init__(self, url):
+                self.url = url
+
+        return PresignedUrl(
+            self.operator.generate_presigned_get_url(
+                self._bucket, path, expiration=expiration
+            )
+        )
+
+    def stat(self, path: str) -> dict:
+        class Stat:
+            def __init__(self, stat):
+                self.stat = stat
+
+            @property
+            def content_length(self):
+                return self.stat["ContentLength"]
+
+        return Stat(self.operator.head_object(self._bucket, path))
+
+    def open(self, path: str, mode: str = "rb") -> IOBase:
+        return open(
+            f"s3://{self._bucket}/{path}",  # noqa
+            mode,
+            transport_params={"client": self.operator.client},
+        )
+
+    def write(self, path: str, data: bytes):
+        fileobj = BytesIO(data)
+        self.operator.upload_fileobj(fileobj, self._bucket, path)
+
+    def delete(self, path: str):
+        self.operator.delete_object(self._bucket, path)
 
     @property
     def bucket(self):
