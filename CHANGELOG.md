@@ -1,5 +1,9 @@
 <!--next-version-placeholder-->
 
+## v0.7.0 (2024-12-31)
+### Feature
+* Refactor OpenDALS3 client to use boto3 ([`3ceedb1`](https://github.com/rawmarshmellows/pys3thon/commit/3ceedb138d7298a3e71a25d07b573e81cac64300))
+
 ## v0.6.4 (2024-12-15)
 ### Fix
 * Update README to bump version for updating opendal dependency to >=0.45.2 to support newer python version ([`182adf5`](https://github.com/rawmarshmellows/pys3thon/commit/182adf53f1a5acecf38e54e634f46d23e6d8dc2c))
