@@ -1,5 +1,9 @@
 <!--next-version-placeholder-->
 
+## v0.7.1 (2025-01-02)
+### Fix
+* Add in cryptography module ([`6f56be0`](https://github.com/rawmarshmellows/pys3thon/commit/6f56be00762f2e8c08f0cba7fa49ed49582f6775))
+
 ## v0.7.0 (2024-12-31)
 ### Feature
 * Refactor OpenDALS3 client to use boto3 ([`3ceedb1`](https://github.com/rawmarshmellows/pys3thon/commit/3ceedb138d7298a3e71a25d07b573e81cac64300))
