@@ -4,7 +4,7 @@ from tempfile import TemporaryDirectory
 
 from opendal import Operator
 
-DEFAULT_CHUNK_SIZE_25MB = 25 * 1024 * 1024
+DEFAULT_CHUNK_SIZE_256MB = 256 * 1024 * 1024
 
 
 class OpenDALService:
@@ -14,19 +14,31 @@ class OpenDALService:
         source_path,
         destination_client,
         destination_path,
-        read_chunk_size=DEFAULT_CHUNK_SIZE_25MB,
+        read_chunk_size=DEFAULT_CHUNK_SIZE_256MB,
     ):
+        total_size = source_client.stat(source_path).content_length
+        bytes_written = 0
+
         with source_client.open(source_path, "rb") as source_file:
             with destination_client.open(destination_path, "wb") as destination_file:
-                bytes_to_write = source_client.stat(source_path).content_length
-                while bytes_to_write > 0:
-                    if bytes_to_write < read_chunk_size:
-                        chunk_size_to_read = bytes_to_write
-                    else:
-                        chunk_size_to_read = read_chunk_size
-                    chunk = bytes(source_file.read(chunk_size_to_read))
+                while bytes_written < total_size:
+                    # Calculate remaining bytes
+                    remaining = total_size - bytes_written
+                    chunk_size = min(read_chunk_size, remaining)
+
+                    # Read and write chunk directly without unnecessary conversion
+                    chunk = source_file.read(chunk_size)
+                    if not chunk:  # EOF
+                        break
+
                     destination_file.write(chunk)
-                    bytes_to_write -= chunk_size_to_read
+                    bytes_written += len(chunk)
+
+        # Verify the copy was complete
+        if bytes_written != total_size:
+            raise IOError(
+                f"Copy incomplete. Expected {total_size} bytes but wrote {bytes_written} bytes"
+            )
 
     def download(self, download_client, download_from_path, save_path):
         source_client = download_client
