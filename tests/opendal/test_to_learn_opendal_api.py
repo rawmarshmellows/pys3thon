@@ -7,8 +7,8 @@ import pytest
 @pytest.mark.skipif(
     os.environ.get("TEST_ENV") != "remote", reason="requires TEST_ENV=remote"
 )
-@pytest.mark.skipif(
-    os.path.exists("/.dockerenv"), reason="opendal doesn't work when it's in docker"
+@pytest.mark.skip(
+    reason="opendal doesn't support all chip architectures it will in 0.45.14"
 )
 def test_opendal_s3_operator(tmpdir, opendal_operators):
     # Create a temporary file to upload
@@ -29,9 +29,7 @@ def test_opendal_s3_operator(tmpdir, opendal_operators):
 @pytest.mark.skipif(
     os.environ.get("TEST_ENV") != "remote", reason="requires TEST_ENV=remote"
 )
-@pytest.mark.skipif(
-    os.path.exists("/.dockerenv"), reason="opendal doesn't work when it's in docker"
-)
+@pytest.mark.skipif(os.path.exists("/.dockerenv"), reason="need to setup azure blob")
 def test_opendal_azure_operator(tmpdir, opendal_operators):
     # Create a temporary file to upload
     local_file = Path(tmpdir) / "test_file.txt"
