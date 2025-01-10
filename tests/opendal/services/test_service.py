@@ -21,6 +21,7 @@ def test_copy_s3_multiple_chunks(tmpdir, opendal_operators, opendal_remote_confi
         path=source_upload_path,
         aws_access_key_id=opendal_remote_configs["s3"]["access_key_id"],
         aws_secret_access_key=opendal_remote_configs["s3"]["secret_access_key"],
+        region=opendal_remote_configs["s3"]["region"],
     )
     source_client = OpenDALClient.create_from_storage_descriptor(source_descriptor)
 
@@ -29,6 +30,7 @@ def test_copy_s3_multiple_chunks(tmpdir, opendal_operators, opendal_remote_confi
         path=destination_upload_path,
         aws_access_key_id=opendal_remote_configs["s3"]["access_key_id"],
         aws_secret_access_key=opendal_remote_configs["s3"]["secret_access_key"],
+        region=opendal_remote_configs["s3"]["region"],
     )
     destination_client = OpenDALClient.create_from_storage_descriptor(
         destination_descriptor
@@ -68,6 +70,57 @@ def test_copy_s3_multiple_chunks(tmpdir, opendal_operators, opendal_remote_confi
 @pytest.mark.skipif(
     os.environ.get("TEST_ENV") != "remote", reason="requires TEST_ENV=remote"
 )
+def test_copy_multi_chunk_s3(tmpdir, opendal_operators, opendal_remote_configs):
+    timestamp = int(time.time())
+    source_upload_path = f"/{timestamp}_source_large_file.txt"
+    destination_upload_path = f"/{timestamp}_destination_large_file.txt"
+
+    source_descriptor = S3StorageDescriptor(
+        bucket=opendal_remote_configs["s3"]["bucket"],
+        path=source_upload_path,
+        aws_access_key_id=opendal_remote_configs["s3"]["access_key_id"],
+        aws_secret_access_key=opendal_remote_configs["s3"]["secret_access_key"],
+        region=opendal_remote_configs["s3"]["region"],
+    )
+    source_client = OpenDALClient.create_from_storage_descriptor(source_descriptor)
+
+    destination_descriptor = S3StorageDescriptor(
+        bucket=opendal_remote_configs["s3"]["bucket"],
+        path=destination_upload_path,
+        aws_access_key_id=opendal_remote_configs["s3"]["access_key_id"],
+        aws_secret_access_key=opendal_remote_configs["s3"]["secret_access_key"],
+        region=opendal_remote_configs["s3"]["region"],
+    )
+    destination_client = OpenDALClient.create_from_storage_descriptor(
+        destination_descriptor
+    )
+
+    # Create 12MB of random data
+    content = os.urandom(12 * 1024 * 1024)  # 12MB of random bytes
+    try:
+        source_client.write(source_descriptor.path, content)
+        assert source_client.read(source_descriptor.path) == content
+
+        # copy from source to destination with 5MB chunk size
+        service = OpenDALService()
+        service.copy(
+            source_client,
+            source_descriptor.path,
+            destination_client,
+            destination_descriptor.path,
+            read_chunk_size=5 * 1024 * 1024,  # 5MB chunks
+        )
+
+        # verify destination content
+        assert destination_client.read(destination_descriptor.path) == content
+    finally:
+        source_client.delete(source_descriptor.path)
+        destination_client.delete(destination_descriptor.path)
+
+
+@pytest.mark.skipif(
+    os.environ.get("TEST_ENV") != "remote", reason="requires TEST_ENV=remote"
+)
 def test_copy_single_chunk_s3(tmpdir, opendal_operators, opendal_remote_configs):
     timestamp = int(time.time())
     source_upload_path = f"/{timestamp}_source_file.txt"
@@ -78,6 +131,7 @@ def test_copy_single_chunk_s3(tmpdir, opendal_operators, opendal_remote_configs)
         path=source_upload_path,
         aws_access_key_id=opendal_remote_configs["s3"]["access_key_id"],
         aws_secret_access_key=opendal_remote_configs["s3"]["secret_access_key"],
+        region=opendal_remote_configs["s3"]["region"],
     )
     source_client = OpenDALClient.create_from_storage_descriptor(source_descriptor)
 
@@ -86,6 +140,7 @@ def test_copy_single_chunk_s3(tmpdir, opendal_operators, opendal_remote_configs)
         path=destination_upload_path,
         aws_access_key_id=opendal_remote_configs["s3"]["access_key_id"],
         aws_secret_access_key=opendal_remote_configs["s3"]["secret_access_key"],
+        region=opendal_remote_configs["s3"]["region"],
     )
     destination_client = OpenDALClient.create_from_storage_descriptor(
         destination_descriptor
