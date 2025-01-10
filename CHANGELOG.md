@@ -1,5 +1,9 @@
 <!--next-version-placeholder-->
 
+## v0.7.2 (2025-01-10)
+### Fix
+* Fix service copy method to handle large files ([`47f9ee3`](https://github.com/rawmarshmellows/pys3thon/commit/47f9ee3413f1a11ca6adeef05d753f42098c2a8c))
+
 ## v0.7.1 (2025-01-02)
 ### Fix
 * Add in cryptography module ([`6f56be0`](https://github.com/rawmarshmellows/pys3thon/commit/6f56be00762f2e8c08f0cba7fa49ed49582f6775))
