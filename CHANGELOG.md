@@ -1,5 +1,9 @@
 <!--next-version-placeholder-->
 
+## v0.7.3 (2025-02-24)
+### Fix
+* Update tqdm dependencies to be less strict ([`a615ac4`](https://github.com/rawmarshmellows/pys3thon/commit/a615ac40bcfc7f0d12aa2b0c093acde304fc9163))
+
 ## v0.7.2 (2025-01-10)
 ### Fix
 * Fix service copy method to handle large files ([`47f9ee3`](https://github.com/rawmarshmellows/pys3thon/commit/47f9ee3413f1a11ca6adeef05d753f42098c2a8c))
