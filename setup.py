@@ -11,7 +11,7 @@ setup(
     packages=find_packages(exclude=["tests", "tests/*"]),
     install_requires=[
         "boto3>=1.24.89",
-        "tqdm==4.64.0",
+        "tqdm>=4.64.0",
         "pyOpenSSL==22.1.0",
         "opendal>=0.45.2",
         "smart_open==7.1.0",
